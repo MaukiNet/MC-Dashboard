@@ -1,2 +1,2 @@
 # Dashboard
-Dashbaord for the Minecraft-Server
+Dashbaord for the Mauki-Server
