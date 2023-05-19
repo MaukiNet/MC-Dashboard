@@ -99,7 +99,11 @@ app.listen(process.env.PORT, () => {
     console.log(`Launched port ${process.env.PORT}`);
 });
 
-//Functions
+/**
+ * Get the discord user of a access_token
+ * @param access_token The access_token of the user
+ * @returns The user
+ */
 async function getDiscordUser(access_token:string):Promise<any> {
     if(!discord_users.has(access_token)) {
         const response = await fetch('https://discord.com/api/users/@me', {
