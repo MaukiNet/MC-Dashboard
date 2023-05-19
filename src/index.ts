@@ -20,8 +20,9 @@ app.get("/", (req, res) => {
 });
 
 app.get('/callback', async (req, res) => {
-    if(!req.query.code) res.redirect(REDIRECT_URL)
+    if(!req.query.code) return res.redirect(REDIRECT_URL);
     const code = req.query.code;
+
     let data = {
         'client_id': process.env.CLIENT_ID,
         'client_secret': process.env.CLIENT_SECRET,
@@ -30,6 +31,7 @@ app.get('/callback', async (req, res) => {
         'redirect_uri': REDIRECT_URI,
         'scope': 'identify'
     };
+
     var response = await fetch('https://discord.com/api/oauth2/token', {
         method: 'POST',
         body: _encode(data),
@@ -37,21 +39,36 @@ app.get('/callback', async (req, res) => {
             'Content-Type': 'application/x-www-form-urlencoded'
         }
     });
+
     var creds = await response.json().catch(err => {console.log(err)});
-    console.log(`${JSON.stringify(creds)}`);
     const { access_token, token_type } = creds;
-    response = await fetch('https://disord.com/api/user/@me', {
+    response = await fetch('https://discord.com/api/users/@me', {
+        method: 'GET',
         headers: {
-            authorization: `${token_type} ${access_token}` 
+            'Authorization' : `${token_type} ${access_token}` 
         }
     });
-    var dc_user = await response.json().catch(err => {console.log(err)});
-    if(dc_user["message"] == "401: Unauthorized") dc_user = null;
-    else dc_user.avatar_url = "https://cdn.discordapp.com/avatars/" + dc_user.id + "/" + dc_user.avatar + ".png";
-    res.cookie("token", access_token);
-    console.log(`ID: ${dc_user['id']}`);
-    return res.redirect("/");
+
+    await response.text().catch(err => console.log(err)).then(text => {
+        if(typeof text != 'string') return res.redirect(`/authorization-failed`);
+        if(text.startsWith("<")) return res.redirect(`/authorization-failed`);
+
+        var dc_user = JSON.parse(text);
+        if(dc_user["message"] == "401: Unauthorized") {
+            dc_user = null;
+            return res.redirect(`/authorization-failed`)
+        }
+
+        dc_user.avatar_url = "https://cdn.discordapp.com/avatars/" + dc_user.id + "/" + dc_user.avatar + ".png";
+        res.cookie("token", access_token);
+        console.log(`ID: ${dc_user['id']}`);
+        return res.redirect("/");
+    })
 });
+
+app.get('/authorization-failed', (req, res) => {
+    res.send(`<h1>Oops, something went wrong!</h1>`);
+})
 
 app.listen(process.env.PORT, () => {
     console.log(`Launched port ${process.env.PORT}`);
