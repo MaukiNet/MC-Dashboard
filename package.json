@@ -4,8 +4,8 @@
   "description": "Dashbaord for the Minecraft-Server",
   "main": "./src/index.ts",
   "scripts": {
-    "start-dev": "nodemon build/index.js",
-    "build": "tsc --watch --preserveWatchOutput",
+    "start-dev": "node build/index.js",
+    "build": "tsc --build",
     "start": "concurrently \"npm run-script build\" \"npm run-script start-dev\""
   },
   "dependencies": {
@@ -16,6 +16,7 @@
     "ejs": "^3.1.9",
     "express": "^4.18.2",
     "express-session": "^1.17.3",
+    "minify-all-js": "^0.1.9",
     "node-fetch": "^2.6.11",
     "nodemon": "^2.0.22",
     "typescript": "^5.0.4"

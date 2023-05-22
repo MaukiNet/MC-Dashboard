@@ -3,8 +3,9 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import fetch from 'node-fetch';
+import fs from "fs";
+import minify from "minify-all-js";
 import { getPathOfDocument, generateID, _encode } from './utils';
-
 
 //Constants
 const app = express();
@@ -17,6 +18,22 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(bodyParser.text());
 app.set('view-engine', 'ejs');
+
+//Things to do before startup
+var files = fs.readdirSync(`./public/assets/js`);
+files.forEach(file => {
+    fs.copyFile(`./public/assets/js/${file}`, `./public/assets/min-js/${file.split(".")[0]}.min.js`, (err) => {
+        if(err) throw err;
+        console.log(`Successfully copied file`);
+    });
+})
+minify("./public/assets/min-js", {
+    comporess_json: true,
+    module: false,
+    mangle: false,
+    packagejson: false,
+    all_js: false
+});
 
 //Request-Handlers
 app.get("/", (req, res) => {
@@ -73,19 +90,16 @@ app.get('/callback', async (req, res) => {
 app.get('/dash', async (req, res) => {
     const access_token:string|undefined = req.cookies["token"];
     if(typeof access_token == 'undefined') return res.redirect('/callback');
-    var resp = await fetch('http://localhost:8080/online_players', {
-        method: 'GET',
-        headers: {
-            'Authorization': access_token
-        }
-    });
-    await resp.json().catch(err => {return res.render(getPathOfDocument(`ejs\\server-offline.ejs`))}).then(data => {
-        res.render(getPathOfDocument('ejs\\dashboard.ejs'), {
-            'discord_user': getDiscordUser(access_token),
-            'online_players': data
-        });
+    res.render(getPathOfDocument('ejs\\dashboard.ejs'), {
+        'discord_user': getDiscordUser(access_token)
     });
 });
+
+app.get(`/assets/:type/:file`, (req, res) => {
+    const type = req.params['type'];
+    const file = req.params['file'];
+    res.sendFile(getPathOfDocument(`assets\\${type}\\${file}`));
+})
 
 app.get('/authorization-failed', (req, res) => {
     res.send(`<h1>Oops, something went wrong!</h1>`);

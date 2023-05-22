@@ -1,20 +1,8 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta name="author" content="MiauRizius, KikiYT90">
-        <meta name="description" content="Dashboard of the Mauki-Season Server">
-    </head>
+    <%- include('parts/head.ejs') %>
+    <script src="./assets/min-js/api-connector.min.js"></script>
     <body>
-        <% if(online_players['code'] != 200) { %>
-            <script>window.location.href = `/authorization-failed`</script>
-        <% } else { %>
-            <h4>Spieler: <%= online_players['requester']['minecraft_user']['name'] %></h4>
-        <% } %>
-        
-        <ul>
-            <% online_players['online_players'].forEach(function(uuid, name) {  %>
-                <li><%= name %></li>
-            <% }) %>
-        </ul>
+
     </body>
 </html>
