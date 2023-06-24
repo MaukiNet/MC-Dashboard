@@ -132,3 +132,4 @@ dist
 #own
 build
 public/assets/min-js
+public/assets/css/tailwind-build.css

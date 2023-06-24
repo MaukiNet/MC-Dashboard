@@ -95,6 +95,34 @@ app.get('/dash', async (req, res) => {
     });
 });
 
+app.get('/regeln', async (req, res) => {
+
+});
+
+app.get('/mods', async (req, res) => {
+
+});
+
+app.get('/unban', async (req, res) => {
+    const access_token:string|undefined = req.cookies["token"];
+    if(typeof access_token == 'undefined') return res.redirect('/callback');
+    res.render(getPathOfDocument('ejs\\unban\\unbanrequest.ejs'), {
+        'discord_user': getDiscordUser(access_token)
+    });
+});
+
+app.get('/privacy-unban', async (req, res) => {
+    res.render(getPathOfDocument("ejs\\privacy-unban.ejs"));
+})
+
+app.get('/unbansuccess', async (req, res) => {
+    res.render(getPathOfDocument('ejs\\unban\\unbansuccess.ejs'));
+});
+
+app.get('/alreadyrequested', async (req, res) => {
+    res.render(getPathOfDocument('ejs\\unban\\alreadyrequested.ejs'));
+});
+
 app.get(`/assets/:type/:file`, (req, res) => {
     const type = req.params['type'];
     const file = req.params['file'];
@@ -107,6 +135,10 @@ app.get('/authorization-failed', (req, res) => {
 
 app.get('/server-offline', (req, res) => {
     res.render(getPathOfDocument('ejs\\server-offline.ejs'));
+});
+
+app.use(async (req, res) => {
+    res.status(404).render(getPathOfDocument("ejs\\404.ejs"));
 });
 
 app.listen(process.env.PORT, () => {

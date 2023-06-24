@@ -6,7 +6,8 @@
   "scripts": {
     "start-dev": "node build/index.js",
     "build": "tsc --build",
-    "start": "concurrently \"npm run-script build\" \"npm run-script start-dev\""
+    "tailwind": "npx tailwindcss -i ./public/assets/css/tailwind-raw.css -o ./public/assets/css/tailwind-build.css",
+    "start": "concurrently \"npm run-script build\" \"npm run-script tailwind\" \"npm run-script start-dev\""
   },
   "dependencies": {
     "body-parser": "^1.20.2",
@@ -24,11 +25,12 @@
   "devDependencies": {
     "@types/cookie-parser": "^1.4.3",
     "@types/express": "^4.17.17",
-    "@types/node-fetch": "^2.6.4"
+    "@types/node-fetch": "^2.6.4",
+    "tailwindcss": "^3.3.2"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/MaukiMC/Dashboard.git"
+    "url": "git+https://github.com/MaukiNet/Dashboard.git"
   },
   "authors": [
     "MiauRizius",
@@ -36,7 +38,7 @@
   ],
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/MaukiMC/Dashboard/issues"
+    "url": "https://github.com/MaukiNet/Dashboard/issues"
   },
-  "homepage": "https://github.com/MaukiMC/Dashboard#readme"
+  "homepage": "https://github.com/MaukiNet/Dashboard#readme"
 }
